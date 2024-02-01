@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка формы</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Ваши мета-теги, стили и другие ресурсы -->
+</head>
+<body>
+    <!-- Содержимое вашей веб-страницы -->
+    <div class="questions">
+        <div class="container">
+          <div class="questions__form form">
+            <div class="questions__inner form__inner">
+              <h2 class="title_h2 title_center">Остались вопросы?</h2>
+              <div class="questions__text">Задайте их нашему специалисту и он оперативно ответит на них!</div>
+              <form class="questions__innerForm" data-role="form-send">
+                <input class="kuhnicheck" type="hidden" value="" name="kuhnicheck">
+                <div class="questions__input">
+                  <input class="form__input" type="name" placeholder="Введите Ваше имя" name="name" required>
+                </div>
+                <div class="questions__input">
+                    <input id="emailId" class="form__input" type="mail" placeholder="Введите Вашу почту" name="mail" type="text" required>
+                </div>
+                <div class="questions__input">
+                  <input class="form__input" type="tel" placeholder="+7 (___) ___-__-__" name="phone" required>
+                </div>
+                <div class="questions__input">
+                    <input class="form__input" type="price" placeholder="Введите цену в ₽" name="price" required>
+                </div>                
+                <div class="questions__input">
+                  <div class="button__container">
+                    <button class="button button_big" type="submit">Задать вопрос</button>
+                  </div>
+                </div>
+                <div class="questions__input">
+                  <div class="questions__policy">
+                    <div class="form__policy">Передавая информацию сайту Вы принимаете условия <a class="form__policy-link" href="#" target="_blank">Политики защиты персональной информации</a></div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/RobinHerbots/Inputmask@5.0.3/dist/jquery.inputmask.min.js"></script>
+    <script defer src="main.js"></script>
+</body>
+</html>
