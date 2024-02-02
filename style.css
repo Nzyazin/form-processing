@@ -98,7 +98,8 @@
     display: flex;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
-    padding-top: 21px
+    padding-top: 21px;
+    justify-content: center;
 }
 
 .questions__input {

@@ -65,48 +65,18 @@ document.addEventListener('DOMContentLoaded', function () {
         rightAlign: false
     });
     priceMaskWithCurrency.mask(document.getElementsByName('price'));
-
+    
     // Отправка с формы
     const form = {
+        main : $('[data-role="form-send"]'),
         name : $('input[type="name"]'),
         mail : $('input[type="mail"]'),
         phone : $('input[type="tel"]'),
         price : $('input[type="price"]'),
 
-
-        initFirstEnterPage: function () {
-            let cookie = App.getCookie("firstEnterPage");
-            if (!cookie) {
-                let location = decodeURI(window.location.toString());
-                App.setCookie('firstEnterPage', location);
-            }
-            let referrerCookie = App.getCookie("firstReferrer");
-            if (!referrerCookie) {
-                let referrer = decodeURI(document.referrer ? document.referrer.toString() : "Прямой заход");
-                App.setCookie('firstReferrer', referrer, { expires: 3600 * 24 * 30 });
-            }
-        },
-
-        validateForm: function () {
-            $(this).validate({
-                rules: {
-                    phone: {
-                        required: true,
-                        minlength: 5,
-                        pattern: (placeNumber && placeNumber.length !== 0) ? `^\\+?${placeNumber} \\([\\d-() ]*` : '^\\+?7 \\(9[\\d-() ]*'
-                    }
-                },
-                messages: {
-                    phone: {
-                        pattern: 'Некорректный номер телефона.'
-                    },
-                }
-            });
-        },
         sendAjax(e) {
             e.preventDefault();
             let $this = $(this);
-            if (!$this.valid()) return false;
             let fd = new FormData(this);
             let submit = $this.find('[type="submit"]');
             submit.prop('disabled', true);           
@@ -139,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     if (form.main.length > 0) {
-        form.main.each(form.validateForm);
         form.main.on('submit', form.sendAjax);
     }
 });
