@@ -9,7 +9,7 @@ $data = [
     'client_secret' => $json['client_secret'],
     'grant_type' => 'authorization_code',
     'code' => $_GET['code'],
-    'redirect_uri' => 'http://zyaz.zyazinng.beget.tech/',
+    'redirect_uri' => 'https://252.xn--e1agfmhheqeu.xn--p1ai/amocrm-oauth.php',
 ];
 
 /**
@@ -74,7 +74,7 @@ $data = [
     'refreshToken' => $response['refresh_token'],
     'token_type' => $response['token_type'],
     'client_secret' => $json['client_secret'],
-    'redirect_uri' => 'http://zyaz.zyazinng.beget.tech/',
+    'redirect_uri' => 'https://252.xn--e1agfmhheqeu.xn--p1ai/amocrm-oauth.php',
     'client_id' =>  $json['client_id'],
 ];
 
