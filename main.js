@@ -99,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 async error(jqXHR, textStatus, errorThrown) {
                     logJqXhr(jqXHR);
-                    await Promise.allSettled(promisesSet);
                     alert(jqXHR.responseText);
                 },
                 complete(jqXHR, textStatus) { submit.prop('disabled', false); }
