@@ -1,6 +1,30 @@
 "use strict";
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Куки
+    let startTime;
+
+    // Функция, которая запускается при загрузке страницы
+    function startTrackingTime() {
+        startTime = new Date();
+    }
+ 
+    // Функция, которая отправляет форму и проверяет время
+    function submitForm() {
+        const currentTime = new Date();
+        const elapsedTime = (currentTime - startTime) / 1000; // Время в секундах
+ 
+        // Добавляем информацию о времени в форму
+        document.getElementById('timeSpent').value = elapsedTime;
+ 
+        // Отправляем форму
+        document.forms['yourForm'].submit();
+    }
+ 
+    // Запуск отслеживания времени при загрузке страницы
+    startTrackingTime();
+    
+ 
     // Проверка имени
     var nameMask = new Inputmask({
         mask: 'a{1,50}', // Разрешает вводить от 1 до 50 буквенных символов
