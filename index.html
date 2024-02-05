@@ -9,7 +9,7 @@
   <!-- Ваши мета-теги, стили и другие ресурсы -->
 </head>
 
-<body>
+<body>  
   <!-- Содержимое вашей веб-страницы -->
   <div class="questions">
     <div class="container">
@@ -17,7 +17,7 @@
         <div class="questions__inner form__inner">
           <h2 class="title_h2 title_center">Остались вопросы?</h2>
           <div class="questions__text">Задайте их нашему специалисту и он оперативно ответит на них!</div>
-          <form class="questions__innerForm" data-role="form-send" data-src="/" method="POST" action="send.php">
+          <form class="questions__innerForm" name="yourForm" method="POST" data-role="form-send" data-src="/">
             <input type="hidden" name="timeSpent" id="timeSpent" value="0">
             <div class="questions__input">
               <input class="form__input" type="name" placeholder="Введите Ваше имя" name="name" required>
@@ -34,7 +34,7 @@
             </div>
             <div class="questions__input">
               <div class="button__container">
-                <button class="button button_big" onclick="submitForm()" type="submit">Задать вопрос</button>
+                <button class="button button_big" type="submit">Задать вопрос</button>
               </div>
             </div>
             <div class="questions__input">

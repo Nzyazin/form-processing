@@ -20,18 +20,6 @@ class AmoCRM
   {
     include_once __DIR__ . '/bootstrap.php';
 
-    // $name = $lead_data['NAME'];
-    // $phone = $lead_data['PHONE'];
-    // $email = $lead_data['EMAIL'];
-    // $companyName = $lead_data['COMPANY'];
-    // $description = $lead_data['TEXT'];
-    // $city = $lead_data['CITY'];
-    $leadName = 'Заявка с сайта';
-
-    $name = 'Niksda';
-    $phone = '8982932323';
-    $email = 'zy@rs.ru';
-
     $accessToken = getToken();
 
     $apiClient->setAccessToken($accessToken)
@@ -49,85 +37,76 @@ class AmoCRM
 
 
     //Представим, что у нас есть данные, полученные из сторонней системы
-    $externalData = [
-      [
-        'price' => 54321,
-        'name' => 'Lead name',
-        'status_id' => 63877810,
-        'pipeline_id' => 7742798,
-        'contact' => [
-          'first_name' => 'Ivan',
-          'last_name' => 'Zinoviev',
-          'phone' => '+79129876543',
-          'mail' => 'sss@gmail.com',
-        ]
+    $externalLead = [
+      'price' => $lead_data['price'],
+      'name' => "Заявка с сайта",
+      'status_id' => 63877810,
+      'pipeline_id' => 7742798,
+      'contact' => [
+        'first_name' => (string)$lead_data['name'],
+        'phone' => $lead_data['phone'],
+        'mail' => $lead_data['mail'],
       ]
     ];
 
     $leadsCollection = new LeadsCollection();
-    $userNumericValue = 1;
+    //Создадим коллекцию полей сущности
+    $leadCustomFieldsValues = new CustomFieldsValuesCollection();
+    //Создадим модель значений поля типа текст
+    $textCustomFieldValuesModel = new TextCustomFieldValuesModel();
+    //Укажем ID поля
+    $textCustomFieldValuesModel->setFieldId(1066241);
+    //Добавим значения
+    $textCustomFieldValuesModel->setValues(
+      (new TextCustomFieldValueCollection())
+        ->add((new TextCustomFieldValueModel())->setValue($lead_data['timeSpent']))
+    );
+    //Добавим значение в коллекцию полей сущности
+    $leadCustomFieldsValues->add($textCustomFieldValuesModel);
 
-
-    //Создадим модели и заполним ими коллекцию
-    foreach ($externalData as $externalLead) {
-      //Создадим коллекцию полей сущности
-      $leadCustomFieldsValues = new CustomFieldsValuesCollection();
-      //Создадим модель значений поля типа текст
-      $textCustomFieldValuesModel = new TextCustomFieldValuesModel();
-      //Укажем ID поля
-      $textCustomFieldValuesModel->setFieldId(1066241);
-      //Добавим значения
-      $textCustomFieldValuesModel->setValues(
-        (new TextCustomFieldValueCollection())
-          ->add((new TextCustomFieldValueModel())->setValue('Более 30 сек'))
+    $lead = (new LeadModel())
+      ->setName($externalLead['name'])
+      ->setPrice($externalLead['price'])
+      ->setStatusId($externalLead['status_id'])
+      ->setPipelineId($externalLead['pipeline_id'])
+      ->setCustomFieldsValues($leadCustomFieldsValues)
+      ->setContacts(
+        (new ContactsCollection())
+          ->add(
+            (new ContactModel())
+              ->setFirstName($externalLead['contact']['first_name'])
+              ->setCustomFieldsValues(
+                (new CustomFieldsValuesCollection())
+                  ->add(
+                    (new MultitextCustomFieldValuesModel())
+                      ->setFieldCode('PHONE')
+                      ->setValues(
+                        (new MultitextCustomFieldValueCollection())
+                          ->add(
+                            (new MultitextCustomFieldValueModel())
+                              ->setValue($externalLead['contact']['phone'])
+                          )
+                      )
+                  )
+                  ->add(
+                    (new MultitextCustomFieldValuesModel())
+                      ->setFieldCode('EMAIL')  // Код кастомного поля для email
+                      ->setValues(
+                        (new MultitextCustomFieldValueCollection())
+                          ->add(
+                            (new MultitextCustomFieldValueModel())
+                              ->setValue($externalLead['contact']['mail'])
+                          )
+                      )
+                  )
+              )
+          )
       );
-      //Добавим значение в коллекцию полей сущности
-      $leadCustomFieldsValues->add($textCustomFieldValuesModel);
-
-      $lead = (new LeadModel())
-        ->setName($externalLead['name'])
-        ->setPrice($externalLead['price'])
-        ->setStatusId($externalLead['status_id'])
-        ->setPipelineId($externalLead['pipeline_id'])
-        ->setCustomFieldsValues($leadCustomFieldsValues)
-        ->setContacts(
-          (new ContactsCollection())
-            ->add(
-              (new ContactModel())
-                ->setFirstName($externalLead['contact']['first_name'])
-                ->setLastName($externalLead['contact']['last_name'])
-                ->setCustomFieldsValues(
-                  (new CustomFieldsValuesCollection())
-                    ->add(
-                      (new MultitextCustomFieldValuesModel())
-                        ->setFieldCode('PHONE')
-                        ->setValues(
-                          (new MultitextCustomFieldValueCollection())
-                            ->add(
-                              (new MultitextCustomFieldValueModel())
-                                ->setValue($externalLead['contact']['phone'])
-                            )
-                        )
-                    )
-                    ->add(
-                      (new MultitextCustomFieldValuesModel())
-                        ->setFieldCode('EMAIL')  // Код кастомного поля для email
-                        ->setValues(
-                          (new MultitextCustomFieldValueCollection())
-                            ->add(
-                              (new MultitextCustomFieldValueModel())
-                                ->setValue($externalLead['contact']['mail'])
-                            )
-                        )
-                    )
-                )
-            )
-        );
 
 
 
-      $leadsCollection->add($lead);
-    }
+    $leadsCollection->add($lead);
+
 
     //Создадим сделки
     try {

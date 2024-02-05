@@ -1,30 +1,27 @@
 "use strict";
+ // Время, проведенное на сайте до отправки
+ let startTime;
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Куки
-    let startTime;
+ // Функция, которая запускается при загрузке страницы
+ function startTrackingTime() {
+    startTime = new Date();
+}
 
-    // Функция, которая запускается при загрузке страницы
-    function startTrackingTime() {
-        startTime = new Date();
-    }
- 
-    // Функция, которая отправляет форму и проверяет время
-    function submitForm() {
-        const currentTime = new Date();
-        const elapsedTime = (currentTime - startTime) / 1000; // Время в секундах
- 
-        // Добавляем информацию о времени в форму
-        document.getElementById('timeSpent').value = elapsedTime;
- 
-        // Отправляем форму
-        document.forms['yourForm'].submit();
-    }
- 
+// Функция, которая отправляет форму и проверяет время
+function submitForm() {
+    const currentTime = new Date();
+    const elapsedTime = (currentTime - startTime) / 1000; // Время в секундах
+    Math.round(elapsedTime);
+    // Добавляем информацию о времени в форму
+    document.getElementById('timeSpent').value = elapsedTime;
+    console.log(elapsedTime, "elapsedTime");
+}
+
+document.addEventListener('DOMContentLoaded', function () {    
+
     // Запуск отслеживания времени при загрузке страницы
     startTrackingTime();
-    
- 
+
     // Проверка имени
     var nameMask = new Inputmask({
         mask: 'a{1,50}', // Разрешает вводить от 1 до 50 буквенных символов
@@ -89,22 +86,23 @@ document.addEventListener('DOMContentLoaded', function () {
         rightAlign: false
     });
     priceMaskWithCurrency.mask(document.getElementsByName('price'));
-    
+
     // Отправка с формы
     const form = {
-        main : $('[data-role="form-send"]'),
-        name : $('input[type="name"]'),
-        mail : $('input[type="mail"]'),
-        phone : $('input[type="tel"]'),
-        price : $('input[type="price"]'),
+        main: $('[data-role="form-send"]'),
+        name: $('input[type="name"]'),
+        mail: $('input[type="mail"]'),
+        phone: $('input[type="tel"]'),
+        price: $('input[type="price"]'),
 
         sendAjax(e) {
             e.preventDefault();
             let $this = $(this);
+            submitForm();
             let fd = new FormData(this);
             let submit = $this.find('[type="submit"]');
-            submit.prop('disabled', true);           
-            
+            submit.prop('disabled', true);            
+
             function logJqXhr(jqXHR) {
                 console.log(`status-text: ${jqXHR.statusText} \ncode: ${jqXHR.status} \nresponse: ${jqXHR.responseText} \n`, 'jqXHR is...');
                 console.log(jqXHR);
