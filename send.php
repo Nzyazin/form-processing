@@ -1,9 +1,54 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] . '/amo/create_lead.php';
+error_reporting(E_ERROR | E_PARSE);
+$exceptionsLog = [];
 
+function isLogHasErrors()
+{
+    global $exceptionsLog;
+    foreach ($exceptionsLog as $record) foreach ($record as $status => $message) if ($status !== "Warning") return true;
+    return false;
+}
+
+function sendExceptionsLog($emails)
+{
+    $subject = isLogHasErrors() ? "Лог кошмарных ошибок gulp-landing: 252.суперкухни.рф" : "Лог ошибок gulp-landing: 252.суперкухни.рф";
+    $headers  = "From: superkuhni.rf <no-reply@xn--e1agfmhheqeu.xn--p1ai>\r\n";
+    $headers .= "Reply-To: superkuhni.rf <no-reply@xn--e1agfmhheqeu.xn--p1ai>\r\n";
+    $headers .= "Cc: superkuhni.rf <no-reply@xn--e1agfmhheqeu.xn--p1ai>\r\n";
+    $headers .= "X-Sender: superkuhni.rf <no-reply@xn--e1agfmhheqeu.xn--p1ai>\r\n";
+    $headers .= 'X-Mailer: PHP/' . phpversion() . "\r\n";
+    $headers .= "Date: " . date('r') . "\r\n";
+    $headers .= "X-Priority: 3\r\n";
+    $headers .= "Return-Path: superkuhni.rf <no-reply@xn--e1agfmhheqeu.xn--p1ai>\r\n"; // Return path for errors
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/plain; charset=utf-8\r\n";
+
+    global $exceptionsLog;
+    $content = "Сайт https://252.xn--e1agfmhheqeu.xn--p1ai \r\n";
+    $idx = 0;
+    foreach ($exceptionsLog as $record) foreach ($record as $status => $message) $content .= $idx++ . ": $status $message\r\n";
+    try {
+        if (isLogHasErrors()) $content .= "Заявка: \r\n" . serialize($_POST) . "\r\n";
+    } catch (\Throwable $th) {
+        $content .= "Заявка: \r\nУтеряна. Ошибка обработчика ошибок\r\n";
+    }
+
+    try {
+        foreach ($emails as $email) {
+            try {
+                if (!mail($email, $subject, $content, $headers, '-f no-reply@xn--e1agfmhheqeu.xn--p1ai')) logError(__FUNCTION__, __LINE__, "Ошибка отправки логов на почту $email");
+            } catch (Exception $e) {
+                logError(__FUNCTION__, __LINE__, "Ошибка отправки логов на почту $email");
+            }
+        }
+    } catch (Exception $e) {
+        logError(__FUNCTION__, __LINE__, "Ошибка отправки логов на почту");
+    }
+}
 function filterPhone($phone)
 {
-    $phone = str_replace(array( ' ',), '', $phone);
+    $phone = str_replace(array(' ',), '', $phone);
     if (strlen($phone) >= 12) {
         $first = mb_substr($phone, 0, 1);
         if ($first == '7' || $first == '8') {
@@ -11,6 +56,11 @@ function filterPhone($phone)
         }
     }
     return $phone;
+}
+function logError($f, $l, $message)
+{
+    global $exceptionsLog;
+    $exceptionsLog[] = ["Error" => ">line $l; Func $f< $message"];
 }
 
 function filterMail($mail)
@@ -31,7 +81,8 @@ function filterPrice($price)
     }
 }
 
-function parseCurrencyString($currencyString) {
+function parseCurrencyString($currencyString)
+{
     // Заменяем запятые на точки и убираем все символы, кроме цифр и точек
     $numericValue = floatval(str_replace(',', '.', preg_replace('/[^\d.]/', '', $currencyString)));
 
@@ -45,7 +96,8 @@ function parseCurrencyString($currencyString) {
 }
 
 
-function validateName($name) {
+function validateName($name)
+{
     // Удаление лишних пробелов и экранирование спецсимволов
     $name = trim($name);
 
@@ -91,8 +143,18 @@ try {
     $lead_data['phone'] = filterPhone($phone);
     $lead_data['price'] = parseCurrencyString($price);
     $amocrm = new AmoCRM();
-    
+
     $amocrm->add_lead($lead_data);
 } catch (\Throwable $th) {
     logError(__FUNCTION__, __LINE__, "Ошибка создания");
+}
+
+global $exceptionsLog;
+if (!empty($exceptionsLog)) {
+    sendExceptionsLog(["zyazin.nikita@yandex.ru"]);
+}
+
+if (isLogHasErrors($exceptionsLog)) {
+    echo 'При отправке произошла ошибка';
+    http_response_code(500);
 }
