@@ -81,7 +81,7 @@ function filterMail($mail)
     if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
         return $mail;
     } else {
-        return '$mail не валиден';
+        return 'mail не валиден';
     }
 }
 
