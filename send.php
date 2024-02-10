@@ -6,7 +6,13 @@ $exceptionsLog = [];
 function isLogHasErrors()
 {
     global $exceptionsLog;
-    foreach ($exceptionsLog as $record) foreach ($record as $status => $message) if ($status !== "Warning") return true;
+    foreach ($exceptionsLog as $record) {
+        foreach ($record as $status => $message) {
+            if ($status !== "Warning") {
+                return true;
+            }
+        }
+    }
     return false;
 }
 
@@ -27,7 +33,11 @@ function sendExceptionsLog($emails)
     global $exceptionsLog;
     $content = "Сайт https://252.xn--e1agfmhheqeu.xn--p1ai \r\n";
     $idx = 0;
-    foreach ($exceptionsLog as $record) foreach ($record as $status => $message) $content .= $idx++ . ": $status $message\r\n";
+    foreach ($exceptionsLog as $record) {
+        foreach ($record as $status => $message) {
+            $content .= $idx++ . ": $status $message\r\n";
+        }
+    }
     try {
         if (isLogHasErrors()) $content .= "Заявка: \r\n" . serialize($_POST) . "\r\n";
     } catch (\Throwable $th) {
@@ -37,7 +47,10 @@ function sendExceptionsLog($emails)
     try {
         foreach ($emails as $email) {
             try {
-                if (!mail($email, $subject, $content, $headers, '-f no-reply@xn--e1agfmhheqeu.xn--p1ai')) logError(__FUNCTION__, __LINE__, "Ошибка отправки логов на почту $email");
+                if (!mail($email, $subject, $content, $headers, '-f no-reply@xn--e1agfmhheqeu.xn--p1ai')) 
+                {
+                    logError(__FUNCTION__, __LINE__, "Ошибка отправки логов на почту $email");
+                }
             } catch (Exception $e) {
                 logError(__FUNCTION__, __LINE__, "Ошибка отправки логов на почту $email");
             }
@@ -117,7 +130,6 @@ function validateName($name)
 
 try {
     $post = $_POST;
-    $server = $_SERVER;
 } catch (\Throwable $th) {
     logError(__FUNCTION__, __LINE__, "Ошибка конфигурирования приложения");
 }
